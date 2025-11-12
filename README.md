@@ -47,6 +47,3 @@ Limitations
 	requires validated, privacy-compliant data, additional model validation, and operational testing.
 - The prototype focuses on the ML pipeline; production concerns (monitoring, logging, secure data
 	handling) are outside its current scope.
-
-If you want the README to include setup and run commands or more operational details, I can add
-them — currently this file intentionally contains only project information.
