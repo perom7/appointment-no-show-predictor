@@ -1,52 +1,52 @@
 # Appointment No-Show Predictor
 
-Predicts patient appointment no-shows and recommends interventions to reduce missed appointments.
+Project overview
+----------------
+This project is a modular machine learning prototype that predicts which patients are likely to miss
+their scheduled appointments (no-shows) and recommends targeted interventions to reduce missed
+appointments. It focuses on the core ML pipeline: data preparation, feature engineering, model
+training, prediction, and intervention recommendation. An optional scheduling helper demonstrates
+how high-risk appointments could be spread across time slots.
 
-Features
-- Synthetic data generator for appointment data
-- Feature engineering (lead time, day of week, previous no-show rate, etc.)
-- Model training (Random Forest) with evaluation metrics and feature importances
-- Prediction + risk score output and recommended intervention rules
-- Optional simple scheduling optimizer to spread high-risk appointments
+Key components
+--------------
+- data/data_generator.py — synthetic appointment dataset generator (writes `data/sample_data.csv`).
+- src/feature_engineering.py — preprocessing and derived feature creation (lead time, weekend flag,
+	appointment hour, aggregated previous no-shows, categorical encoding).
+- src/model_training.py — trains a Random Forest model, evaluates on a test split, prints metrics
+	(accuracy, precision, recall, F1) and feature importances, and saves the model artifact.
+- src/predictor.py — loads a saved model artifact, computes risk probabilities, and returns
+	predictions.
+- src/intervention.py — maps risk scores to recommended actions and writes an interventions CSV
+	with `appointment_id`, `predicted_status`, `risk_score`, and `recommended_action`.
+- src/scheduling.py — optional greedy scheduler to spread high-risk appointments across time slots.
+- main.py — orchestrator that runs generation, training, prediction, and writes outputs.
 
-Quick start
-1. Create a Python 3.9+ virtual environment and install dependencies:
+Data and expected inputs
+------------------------
+The pipeline accepts an appointments CSV. Typical columns used by the code:
+`appointment_id`, `patient_id`, `appointment_date`, `booking_date`, `time`, `age`, `gender`,
+`department`, `appointment_type`, `previous_no_shows`, and optional `weather`.
 
-```powershell
-python -m venv .venv; .\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-```
+Outputs
+-------
+- Interventions CSV (default `interventions.csv`) containing `appointment_id`, `predicted_status`,
+	`risk_score`, and `recommended_action`.
+- Model artifacts under `models/` (e.g., `model.joblib`, `model_balanced.joblib`).
 
-2. Run the main script (this will generate sample data, train a model, and write interventions):
+Design notes
+------------
+- The model uses a Random Forest as a sensible baseline. An `experiments` script demonstrates
+	class-weight balancing and threshold sweeps to trade off precision vs recall.
+- Intervention rules are simple, rule-based mappings from probability to action (SMS, call,
+	reschedule/teleconsultation). Thresholds are configurable in the code/CLI.
 
-```powershell
-python main.py
-```
+Limitations
+-----------
+- The included dataset is synthetic and intended for demonstration only. Real-world deployment
+	requires validated, privacy-compliant data, additional model validation, and operational testing.
+- The prototype focuses on the ML pipeline; production concerns (monitoring, logging, secure data
+	handling) are outside its current scope.
 
-Files
-- `data/data_generator.py`: Generates synthetic appointment dataset and writes `data/sample_data.csv`.
-- `src/feature_engineering.py`: Build derived features and preprocessing.
-- `src/model_training.py`: Train, evaluate, and save model to `models/model.joblib`.
-- `src/predictor.py`: Load model and produce predictions and risk scores.
-- `src/intervention.py`: Map risk scores to recommended actions and write output CSV.
-- `src/scheduling.py`: Optional simple scheduler to spread high-risk appointments.
-- `main.py`: Orchestrator.
-
-Input/Output
-- Input: CSV with appointment records (sample generation included). Key fields: `appointment_id`, `patient_id`, `appointment_date`, `booking_date`, `age`, `gender`, `department`, `appointment_type`, `previous_no_shows`, `time`.
-- Output: `interventions.csv` with columns `appointment_id`, `predicted_status`, `risk_score`, `recommended_action`.
-
-Notes
-- The repository does not push to GitHub automatically. Use the commands below to create a public repo and push your code.
-
-Git push example (run locally):
-
-```powershell
-git init
-git add .
-git commit -m "Initial commit: appointment no-show predictor"
-git branch -M main
-# create a repo on GitHub and then:
-git remote add origin https://github.com/<your-username>/<repo-name>.git
-git push -u origin main
-```
+If you want the README to include setup and run commands or more operational details, I can add
+them — currently this file intentionally contains only project information.
