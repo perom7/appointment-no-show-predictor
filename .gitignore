@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Env
+.venv/
+env/
+venv/
+
+# IDEs
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Data & outputs (generated)
+data/sample_data.csv
+interventions.csv
+interventions_*.csv
+scheduled_demo.csv
+
+# Models / artifacts
+models/
+*.joblib
+
+# Logs
+*.log
